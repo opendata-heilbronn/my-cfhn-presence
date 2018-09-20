@@ -1,0 +1,19 @@
+version: '2'
+services:
+  api:
+    image: r.patrick246.de/cfhn/mycfhn-presence-ms
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+  db:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+  db-admin:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_SERVER: db

@@ -1,0 +1,9 @@
+cfhn:
+  unifi:
+    url: https://192.168.178.168:8443
+    user: cowo
+    password: password here
+spring:
+  data:
+    mongodb:
+      database: presencedb
