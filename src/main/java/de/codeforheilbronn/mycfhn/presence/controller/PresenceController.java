@@ -5,11 +5,13 @@ import de.codeforheilbronn.mycfhn.presence.model.persistence.Person;
 import de.codeforheilbronn.mycfhn.presence.model.unifi.UnifiClient;
 import de.codeforheilbronn.mycfhn.presence.model.unifi.UnifiSession;
 import de.codeforheilbronn.mycfhn.presence.repository.PersonRepository;
+import de.codeforheilbronn.mycfhn.presence.service.AuthenticationService;
 import de.codeforheilbronn.mycfhn.presence.service.UnifiControllerService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -24,14 +26,19 @@ public class PresenceController {
 
     private UnifiControllerService controllerService;
     private PersonRepository personRepository;
+    private AuthenticationService authenticationService;
 
-    public PresenceController(UnifiControllerService controllerService, PersonRepository personRepository) {
+    public PresenceController(UnifiControllerService controllerService, PersonRepository personRepository, AuthenticationService authenticationService) {
         this.controllerService = controllerService;
         this.personRepository = personRepository;
+        this.authenticationService = authenticationService;
     }
 
     @GetMapping("/")
-    public List<PresentPerson> getPresentPersons() {
+    public List<PresentPerson> getPresentPersons() throws UnsupportedEncodingException {
+
+        authenticationService.ensureAuthenticated();
+
         UnifiSession session = controllerService.login();
         List<UnifiClient> clients = controllerService.getOnlineClients(session);
 

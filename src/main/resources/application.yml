@@ -3,6 +3,12 @@ cfhn:
     url: https://192.168.178.168:8443
     user: cowo
     password: password here
+  presence:
+    auth:
+      publicKeyUrl: https://login.my.cfhn.it/jwt/public-key
+      cookieName: cfhn
+      loginUrl: https://login.my.cfhn.it/
+      redirectUrl: https://presence.my.cfhn.it/presence/
 spring:
   data:
     mongodb:
