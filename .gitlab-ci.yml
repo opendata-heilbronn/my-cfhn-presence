@@ -1,0 +1,30 @@
+build:
+  image: docker:stable
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    IMAGE_TAG: repo.cfhn.it/mycfhn/presence-ms/presence-ms
+  services:
+  - docker:dind
+  stage: build
+  tags:
+  - build
+  script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN repo.cfhn.it
+  - docker build -t $IMAGE_TAG .
+  - docker push $IMAGE_TAG
+
+deploy_prod:
+  image:
+    name: docker/compose:1.22.0
+    entrypoint: [""]
+  stage: deploy
+  tags:
+  - deploy
+  environment:
+    name: production
+    url: https://presence.my.cfhn.it/
+  script:
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN repo.cfhn.it
+  - docker-compose pull
+  - docker-compose up -d --no-build

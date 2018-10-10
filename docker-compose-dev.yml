@@ -1,11 +1,13 @@
 version: '2'
 services:
   api:
-    image: r.patrick246.de/cfhn/mycfhn-presence-ms
+    image: repo.cfhn.it/mycfhn/presence-ms/presence-ms
     build: .
     restart: always
     ports:
       - 8080:8080
+    environment:
+      JAVA_OPTS: "-Dcfhn.unifi.url=https://192.168.178.168:8443 -Dcfhn.unifi.password=${UNIFI_PASSWORD} -Dspring.data.mongodb.uri=mongodb://db:27017"
   db:
     image: mongo
     restart: always
