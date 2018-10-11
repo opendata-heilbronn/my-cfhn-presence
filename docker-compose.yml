@@ -16,7 +16,7 @@ services:
       prometheus.path: "/actuator/prometheus"
       prometheus.port: "8080"
     environment:
-      JAVA_OPTS: "-Dcfhn.unifi.url=https://192.168.255.2:8443 -Dcfhn.unifi.password=${UNIFI_PASSWORD} -Dspring.data.mongodb.uri=mongodb://db:27017"
+      JAVA_OPTS: "-Dcfhn.unifi.url=https://192.168.255.2:8443 -Dcfhn.unifi.password=${UNIFI_PASSWORD} -Dspring.data.mongodb.uri=mongodb://db:27017 -Dspring.profiles.active=cfhnAuth"
     volumes:
       - /etc/timezone:/etc/timezone:ro
   db:
