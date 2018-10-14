@@ -19,6 +19,8 @@ deploy_prod:
     name: docker/compose:1.22.0
     entrypoint: [""]
   stage: deploy
+  only:
+  - master
   tags:
   - deploy
   environment:
