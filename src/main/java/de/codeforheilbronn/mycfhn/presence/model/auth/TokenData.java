@@ -11,5 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class TokenData {
     private String username;
+    private String name;
     private List<String> groups;
 }
