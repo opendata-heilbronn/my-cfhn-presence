@@ -47,6 +47,7 @@ public class TokenValidationService {
             Jws<Claims> claims = Jwts.parser().setSigningKey(jwtPublicKey).parseClaimsJws(token);
             return Optional.of(TokenData.builder()
                     .username(claims.getBody().getSubject())
+                    .name(claims.getBody().get("name", String.class))
                     .groups(claims.getBody().get("groups", List.class))
                     .build());
         } catch (JwtException e) {

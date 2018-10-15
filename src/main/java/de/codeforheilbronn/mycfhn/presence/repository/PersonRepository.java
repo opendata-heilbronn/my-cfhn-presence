@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface PersonRepository extends MongoRepository<Person, String> {
     Optional<Person> findByMacsContaining(String mac);
+    Optional<Person> findByUsername(String username);
 }
