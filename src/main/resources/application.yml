@@ -13,6 +13,9 @@ spring:
   data:
     mongodb:
       database: presencedb
+  cache:
+    jcache:
+      config: classpath:ehcache.xml
 management:
   endpoint:
     metrics:
