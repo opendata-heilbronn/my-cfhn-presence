@@ -1,0 +1,19 @@
+<ehcache:config
+        xmlns:ehcache="http://www.ehcache.org/v3"
+        xmlns:jcache="http://www.ehcache.org/v3/jsr107">
+    <ehcache:cache-template name="unifi-template">
+        <ehcache:heap unit="entries">100</ehcache:heap>
+    </ehcache:cache-template>
+
+    <ehcache:cache alias="unifi-login" uses-template="unifi-template">
+        <ehcache:expiry>
+            <ehcache:ttl unit="minutes">5</ehcache:ttl>
+        </ehcache:expiry>
+    </ehcache:cache>
+
+    <ehcache:cache alias="unifi-users" uses-template="unifi-template">
+        <ehcache:expiry>
+            <ehcache:ttl unit="minutes">1</ehcache:ttl>
+        </ehcache:expiry>
+    </ehcache:cache>
+</ehcache:config>

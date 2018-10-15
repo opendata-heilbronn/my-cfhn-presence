@@ -3,6 +3,7 @@ package de.codeforheilbronn.mycfhn.presence.service;
 import de.codeforheilbronn.mycfhn.presence.model.unifi.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,6 +41,7 @@ public class UnifiControllerService {
         this.restTemplate = restTemplate;
     }
 
+    @Cacheable(value = "unifi-login", key = "#root.methodName")
     public UnifiSession login() {
         ResponseEntity<String> response = restTemplate.postForEntity(
                 controllerUrl + "/api/login",
@@ -58,6 +60,7 @@ public class UnifiControllerService {
         throw new ControllerException("Error logging in");
     }
 
+    @Cacheable(value = "unifi-users", key = "#root.methodName")
     public List<UnifiClient> getOnlineClients(UnifiSession session) {
         ResponseEntity<UnifiResponse<List<UnifiClient>>> clients = restTemplate.exchange(
                 controllerUrl + "/api/s/default/stat/sta",
