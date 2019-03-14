@@ -11,4 +11,5 @@ public class PresentPerson {
     private String username;
     private String name;
     private LocalDateTime lastSeen;
+    private String location;
 }

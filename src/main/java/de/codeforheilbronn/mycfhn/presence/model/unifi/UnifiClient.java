@@ -2,6 +2,7 @@ package de.codeforheilbronn.mycfhn.presence.model.unifi;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.codeforheilbronn.mycfhn.presence.model.UnifiedClient;
 import lombok.Data;
 
 @Data
@@ -13,4 +14,8 @@ public class UnifiClient {
     private int lastSeenGateway;
 
     private String mac;
+
+    public UnifiedClient toUnified() {
+        return new UnifiedClient(mac, "Cowo");
+    }
 }
