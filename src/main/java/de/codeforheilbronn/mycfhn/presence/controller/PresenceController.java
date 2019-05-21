@@ -2,14 +2,14 @@ package de.codeforheilbronn.mycfhn.presence.controller;
 
 import de.codeforheilbronn.mycfhn.presence.model.UnifiedClient;
 import de.codeforheilbronn.mycfhn.presence.model.api.PresentPerson;
-import de.codeforheilbronn.mycfhn.presence.model.buga.BugaClient;
+import de.codeforheilbronn.mycfhn.presence.model.openwrt.OpenWRTClient;
 import de.codeforheilbronn.mycfhn.presence.model.persistence.Person;
 import de.codeforheilbronn.mycfhn.presence.model.persistence.PushedPresence;
 import de.codeforheilbronn.mycfhn.presence.model.unifi.UnifiClient;
 import de.codeforheilbronn.mycfhn.presence.model.unifi.UnifiSession;
 import de.codeforheilbronn.mycfhn.presence.repository.PersonRepository;
 import de.codeforheilbronn.mycfhn.presence.service.AuthenticationService;
-import de.codeforheilbronn.mycfhn.presence.service.BugaService;
+import de.codeforheilbronn.mycfhn.presence.service.OpenWRTService;
 import de.codeforheilbronn.mycfhn.presence.service.PushedPresenceService;
 import de.codeforheilbronn.mycfhn.presence.service.UnifiControllerService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +33,8 @@ import java.util.stream.Stream;
 public class PresenceController {
 
     private UnifiControllerService controllerService;
-    private BugaService bugaService;
+    private OpenWRTService bugaService;
+    private OpenWRTService mseService;
     private PersonRepository personRepository;
     private AuthenticationService authenticationService;
     private PushedPresenceService pushedPresenceService;
@@ -42,12 +43,14 @@ public class PresenceController {
             UnifiControllerService controllerService,
             PersonRepository personRepository,
             AuthenticationService authenticationService,
-            BugaService bugaService,
+            OpenWRTService bugaService,
+            OpenWRTService mseService,
             PushedPresenceService pushedPresenceService) {
         this.controllerService = controllerService;
         this.personRepository = personRepository;
         this.authenticationService = authenticationService;
         this.bugaService = bugaService;
+        this.mseService = mseService;
         this.pushedPresenceService = pushedPresenceService;
     }
 
@@ -58,12 +61,14 @@ public class PresenceController {
 
         UnifiSession session = controllerService.login();
         List<UnifiClient> unifiClients = controllerService.getOnlineClients(session);
-        List<BugaClient> bugaClients = bugaService.getClients();
+        List<OpenWRTClient> bugaClients = bugaService.getClients();
+        List<OpenWRTClient> mseClients = mseService.getClients();
         List<PushedPresence> pushedClients = pushedPresenceService.getPresences();
 
         return concat(
                 unifiClients.stream().map(UnifiClient::toUnified),
-                bugaClients.stream().map(BugaClient::toUnified),
+                bugaClients.stream().map(client -> client.toUnified("BUGA")),
+                mseClients.stream().map(client -> client.toUnified("MSE")),
                 pushedClients.stream().map(PushedPresence::toUnified)
         ).map(client -> {
             Optional<Person> person = personRepository.findByMacsContaining(client.getMac());
