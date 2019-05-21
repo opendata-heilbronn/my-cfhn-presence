@@ -1,8 +1,7 @@
 package de.codeforheilbronn.mycfhn.presence.service;
 
-import de.codeforheilbronn.mycfhn.presence.model.buga.BugaClient;
+import de.codeforheilbronn.mycfhn.presence.model.openwrt.OpenWRTClient;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -11,19 +10,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 @Slf4j
-public class BugaService {
+public class OpenWRTService {
 
     private RestTemplate restTemplate;
+    private String address;
 
-    public BugaService(RestTemplate restTemplate) {
+    public OpenWRTService(RestTemplate restTemplate, String address) {
         this.restTemplate = restTemplate;
+        this.address = address;
     }
 
-    public List<BugaClient> getClients() {
+    public List<OpenWRTClient> getClients() {
         try {
-            String contents = restTemplate.getForObject("http://192.168.11.1/dhcp.txt", String.class);
+            String contents = restTemplate.getForObject("http://" + address + "/dhcp.txt", String.class);
 
             if (contents == null) {
                 return Collections.emptyList();
@@ -31,7 +31,7 @@ public class BugaService {
 
             return Arrays.stream(contents.split("\n"))
                     .map(line -> line.split(" "))
-                    .map(parts -> new BugaClient(Long.parseLong(parts[0]), parts[1], parts[2]))
+                    .map(parts -> new OpenWRTClient(Long.parseLong(parts[0]), parts[1], parts[2]))
                     .collect(Collectors.toList());
         } catch (RestClientException e) {
             log.error("Could not access BUGA DHCP leases", e);
