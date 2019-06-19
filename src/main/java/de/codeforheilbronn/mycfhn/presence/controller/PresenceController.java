@@ -12,16 +12,14 @@ import de.codeforheilbronn.mycfhn.presence.service.AuthenticationService;
 import de.codeforheilbronn.mycfhn.presence.service.OpenWRTService;
 import de.codeforheilbronn.mycfhn.presence.service.PushedPresenceService;
 import de.codeforheilbronn.mycfhn.presence.service.UnifiControllerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -30,6 +28,7 @@ import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("presence")
+@Slf4j
 public class PresenceController {
 
     private UnifiControllerService controllerService;
@@ -59,11 +58,39 @@ public class PresenceController {
 
         authenticationService.ensureAuthenticated();
 
-        UnifiSession session = controllerService.login();
-        List<UnifiClient> unifiClients = controllerService.getOnlineClients(session);
-        List<OpenWRTClient> bugaClients = bugaService.getClients();
-        List<OpenWRTClient> mseClients = mseService.getClients();
-        List<PushedPresence> pushedClients = pushedPresenceService.getPresences();
+        List<UnifiClient> unifiClients;
+        try {
+            UnifiSession session = controllerService.login();
+            unifiClients = controllerService.getOnlineClients(session);
+
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            unifiClients = Collections.emptyList();
+        }
+
+        List<OpenWRTClient> bugaClients;
+        try {
+            bugaClients = bugaService.getClients();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            bugaClients = Collections.emptyList();
+        }
+
+        List<OpenWRTClient> mseClients;
+        try {
+            mseClients = mseService.getClients();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            mseClients = Collections.emptyList();
+        }
+
+        List<PushedPresence> pushedClients;
+        try {
+            pushedClients = pushedPresenceService.getPresences();
+        } catch (Exception e) {
+            log.warn(e.getMessage());
+            pushedClients = Collections.emptyList();
+        }
 
         return concat(
                 unifiClients.stream().map(UnifiClient::toUnified),
