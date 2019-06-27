@@ -97,16 +97,15 @@ public class PresenceController {
                 bugaClients.stream().map(client -> client.toUnified("BUGA")),
                 mseClients.stream().map(client -> client.toUnified("MSE")),
                 pushedClients.stream().map(PushedPresence::toUnified)
-        ).map(client -> {
-            Optional<Person> person = personRepository.findByMacsContaining(client.getMac());
-            return person.map(person1 -> new PresentPerson(
+        ).flatMap(client -> {
+            List<Person> person = personRepository.findByMacsContaining(client.getMac());
+            return person.stream().map(person1 -> new PresentPerson(
                     person1.getUsername(),
                     person1.getName(),
                     LocalDateTime.now(),
                     client.getLocation()
-            )).orElse(null);
-        }).filter(Objects::nonNull)
-                .filter(distinctByKey(person -> person.getUsername() + person.getLocation())).collect(Collectors.toList());
+            ));
+        }).filter(distinctByKey(person -> person.getUsername() + person.getLocation())).collect(Collectors.toList());
     }
 
     private static <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
